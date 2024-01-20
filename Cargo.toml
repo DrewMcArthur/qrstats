@@ -11,6 +11,10 @@ wasm-opt = false
 crate-type = ["cdylib"]
 
 [dependencies]
+getrandom = {version = "0.2.12", features = ["js"]}
+serde = {version = "1.0.195", features = ["derive"]}
+url_encoded_data = "0.6.1"
+uuid = {version = "1.7.0", features = ["v4", "fast-rng"]}
 worker = "0.0.17"
 
 [profile.release]

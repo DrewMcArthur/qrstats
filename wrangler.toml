@@ -2,5 +2,9 @@ compatibility_date = "2023-06-28"
 main = "build/worker/shim.mjs"
 name = "qrstats-worker"
 
+kv_namespaces = [
+  {binding = "QRSTATS_TRACKED_URLS_BY_ID", id = "d282157d8f874675beb36384072285d1", preview_id = "eabf960fb86c4ad5839bdfaaedef7f53"},
+]
+
 [build]
 command = "cargo install -q worker-build && worker-build --release"
