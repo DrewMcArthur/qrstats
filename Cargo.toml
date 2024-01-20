@@ -1,6 +1,7 @@
 [package]
+description = "a cloudflare worker designed to host a webapp that allows for tracking url redirects"
 edition = "2021"
-name = "qrstats-worker"
+name = "qrstats"
 version = "0.1.0"
 
 # https://github.com/rustwasm/wasm-pack/issues/1247

@@ -351,7 +351,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "qrstats-worker"
+name = "qrstats"
 version = "0.1.0"
 dependencies = [
  "getrandom",

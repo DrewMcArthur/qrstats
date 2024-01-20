@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use worker::*;
+use worker::{kv::KvStore, *};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct Target {
@@ -28,9 +28,9 @@ fn index(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
 
 async fn create(req: Request, ctx: RouteContext<()>) -> Result<Response> {
     let target = get_target(req).await?;
-    let new_id = Uuid::new_v4().to_string();
 
     let kv = ctx.kv(TRACKED_URLS_STORE)?;
+    let new_id = gen_unused_id(&kv).await?;
     kv.put(&new_id, target.clone())?.execute().await?;
 
     Response::ok(format!(
@@ -61,6 +61,15 @@ async fn get_target(req: Request) -> Result<Target> {
         url: new_url.clone(),
         password: pw.map(|pw| pw.to_string()),
     })
+}
+
+async fn gen_unused_id(kv: &KvStore) -> Result<String> {
+    let uuid = Uuid::new_v4().to_string();
+    let new_id = uuid.split("-").next().unwrap();
+    match kv.get(&new_id).text().await? {
+        Some(_) => return Err(Error::Internal("ID Already Exists, could not retry".into())),
+        None => return Ok(new_id.to_string()),
+    }
 }
 
 fn redirect(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
