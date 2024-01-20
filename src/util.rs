@@ -1,7 +1,7 @@
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-use worker::{Error, FormData, FormEntry, Request, Response, Result, RouteContext, Url};
+use worker::{Error, FormData, FormEntry, Request, Response, Result, Url};
 
 use crate::Target;
 
@@ -28,10 +28,10 @@ pub(crate) fn gen_hash(s: String) -> String {
     hasher.finish().to_string()
 }
 
-pub(crate) fn ensure_authed(ctx: &RouteContext<()>, target: &Target) -> Result<bool> {
-    if let Some(pw) = target.pw_hash.clone() {
-        match ctx.param("password") {
-            Some(pass) => Ok(pw.eq(&gen_hash(pass.to_string()))),
+pub(crate) fn ensure_authed(pw_hash: Option<&String>, target: &Target) -> Result<bool> {
+    if let Some(expected) = target.pw_hash.clone() {
+        match pw_hash {
+            Some(pass) => Ok(expected.eq(&gen_hash(pass.to_string()))),
             None => Ok(false),
         }
     } else {
