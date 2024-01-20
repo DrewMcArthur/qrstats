@@ -1,0 +1,6 @@
+compatibility_date = "2023-06-28"
+main = "build/worker/shim.mjs"
+name = "qrstats-worker"
+
+[build]
+command = "cargo install -q worker-build && worker-build --release"
