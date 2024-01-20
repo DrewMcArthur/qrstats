@@ -356,6 +356,7 @@ version = "0.1.0"
 dependencies = [
  "getrandom",
  "serde",
+ "serde_json",
  "url_encoded_data",
  "uuid",
  "worker",
