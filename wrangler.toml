@@ -4,6 +4,7 @@ name = "qrstats-worker"
 
 kv_namespaces = [
   {binding = "QRSTATS_TRACKED_URLS_BY_ID", id = "d282157d8f874675beb36384072285d1", preview_id = "eabf960fb86c4ad5839bdfaaedef7f53"},
+  {binding = "QRSTATS_TRACKED_URL_COUNTS", id = "f3aeb8a28efb48c49d0c62004525cfe8", preview_id = "93180104f2934536b7153a3adaa98916"},
 ]
 
 [build]
