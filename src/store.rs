@@ -27,6 +27,16 @@ pub(crate) async fn create_new_target(ctx: &RouteContext<()>, target: &Target) -
         None => gen_unused_id(&kv).await.expect("could not generate new id"),
     };
 
+    if kv
+        .get(&new_id)
+        .text()
+        .await
+        .expect("couldn't get")
+        .is_some()
+    {
+        return Err("ID Already Exists! Choose another.".into());
+    }
+
     console_log!("creating new target with id={}: {:?}", new_id, target);
     kv.put(&new_id, target.clone())
         .expect("couldn't put new target")

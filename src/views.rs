@@ -1,4 +1,4 @@
-use worker::{Response, Result};
+use worker::{Error, Response, Result};
 
 use crate::{util::serve_html, Stats, Target};
 
@@ -29,6 +29,17 @@ pub(crate) fn create_success(target: Target, id: String) -> Result<Response> {
             <p><a href=\"{}\">Stats URL</a> (visit here, and enter your ID and password to view your stats)</p>",
             target.url, id, redirect_url, stats_url
         );
+    let html = format!(include_str!("./public/layout.html"), body);
+    serve_html(html.as_str())
+}
+
+pub(crate) fn create_error(error: Error) -> Result<Response> {
+    let body = format!(
+        "<h1>Error creating new tracked URL</h1>
+        <a href=\"/create\">Try again</a>
+        <p class=\"error\">{}</p>",
+        error.to_string()
+    );
     let html = format!(include_str!("./public/layout.html"), body);
     serve_html(html.as_str())
 }

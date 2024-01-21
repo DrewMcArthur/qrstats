@@ -27,9 +27,10 @@ pub(crate) async fn post_create(req: Request, ctx: RouteContext<()>) -> Result<R
         return Response::error(e.to_string(), 400);
     }
 
-    let new_id = create_new_target(&ctx, &target)
-        .await
-        .expect("couldn't create target");
+    let new_id = match create_new_target(&ctx, &target).await {
+        Ok(id) => id,
+        Err(e) => return views::create_error(e),
+    };
 
     views::create_success(target, new_id)
 }
