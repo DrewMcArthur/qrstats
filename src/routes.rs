@@ -90,7 +90,10 @@ pub(crate) async fn stats(req: Request, ctx: RouteContext<()>) -> Result<Respons
                     )
                 }
             }
-            Err(e) => Response::error(e.to_string(), 500),
+            Err(e) => Response::error(
+                format!("error fetching data from store: {}", e.to_string()),
+                500,
+            ),
         }
     } else {
         Response::redirect(Url::parse(format!("{}/stats", origin).as_str())?)

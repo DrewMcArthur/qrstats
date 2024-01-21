@@ -1,5 +1,5 @@
 use uuid::Uuid;
-use worker::{kv::KvStore, Error, Result, RouteContext};
+use worker::{console_log, kv::KvStore, Error, Result, RouteContext};
 
 use crate::Target;
 
@@ -22,11 +22,12 @@ pub(crate) async fn create_new_target(ctx: &RouteContext<()>, target: &Target) -
         .kv(TRACKED_URLS_STORE)
         .expect("couldn't get URLS kv store");
 
-    let new_id = match ctx.param("id") {
+    let new_id = match &target.id {
         Some(id) => id.to_owned(),
         None => gen_unused_id(&kv).await.expect("could not generate new id"),
     };
 
+    console_log!("creating new target with id={}: {:?}", new_id, target);
     kv.put(&new_id, target.clone())
         .expect("couldn't put new target")
         .execute()
@@ -48,8 +49,17 @@ pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &str) -> Resu
 }
 
 pub(crate) async fn get_target_by_id(ctx: &RouteContext<()>, id: &str) -> Result<Target> {
-    let kv = ctx.kv(TRACKED_URLS_STORE)?;
-    match kv.get(id).json::<Target>().await? {
+    console_log!("fetching target by id: {}", id);
+    let kv = ctx
+        .kv(TRACKED_URLS_STORE)
+        .expect("couldn't get URLS kv store");
+
+    match kv
+        .get(id)
+        .json::<Target>()
+        .await
+        .expect("couldn't parse target from kvstore")
+    {
         Some(target) => Ok(target),
         None => Err(Error::Internal("ID Not Found in our System".into())),
     }

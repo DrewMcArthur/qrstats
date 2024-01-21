@@ -14,6 +14,7 @@ use routes::{
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct Target {
+    id: Option<String>,
     url: String,
     pw_hash: Option<String>,
 }

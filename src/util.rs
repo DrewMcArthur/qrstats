@@ -57,12 +57,18 @@ pub(crate) async fn get_target(req: Request) -> Result<Target> {
         FormEntry::File(_) => return Err(bad_url_format_error),
     };
 
+    let id = match data.get("id") {
+        Some(FormEntry::Field(s)) => Some(s),
+        _ => None,
+    };
+
     let pw = match data.get("password") {
         Some(FormEntry::Field(s)) => Some(gen_hash(s)),
         _ => None,
     };
 
     Ok(Target {
+        id: id,
         url: new_url.clone(),
         pw_hash: pw,
     })
