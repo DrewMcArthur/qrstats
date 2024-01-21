@@ -5,6 +5,8 @@ use crate::{util::serve_html, Stats, Target};
 pub(crate) fn stats_view(stats: Stats) -> Result<Response> {
     let body = format!(
         "<h1>Stats</h1>
+        <a href=\"/\">Home</a>
+        <a href=\"/stats\">Back to Login</a>
         <h2>ID</h2>
         <p>{}</p>
         <h2>Count</h2>
@@ -21,6 +23,7 @@ pub(crate) fn create_success(target: Target, id: String) -> Result<Response> {
 
     let body = format!(
             "<h1>Success!</h1>
+            <a href=\"/\">Home</a>
             <p>New ID for URL(\"{}\") is: {}</p>
             <p><a href=\"{}\">Redirect URL</a> (copy this into your QR generator</p>
             <p><a href=\"{}\">Stats URL</a> (visit here, and enter your ID and password to view your stats)</p>",
