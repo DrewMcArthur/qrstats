@@ -14,10 +14,29 @@
     <p><a href="/">Home</a></p>
     <p>Welcome to your QRStats dashboard! Enter your ID to continue.</p>
     <form action="/stats" method="POST">
-        <input type="text" name="id" placeholder="ID" required>
-        <input type="password" name="pw" placeholder="Password" optional>
+        <input type="text" id="id" name="id" placeholder="ID" required>
+        <input type="password" id="pw" name="pw" placeholder="Password" optional>
         <input type="submit" value="Continue">
     </form>
+    <script>
+        // load id from url params
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to get the value of a query parameter by name
+            function getQueryParam(name) {
+                let urlParams = new URLSearchParams(window.location.search)
+                return urlParams.get(name)
+            }
+
+            // Get the 'id' query parameter
+            let idValue = getQueryParam('id')
+
+            // Set the value to the input field
+            if (idValue) {
+                document.getElementById('id').value = idValue
+            }
+        });
+
+    </script>
 </body>
 
 </html>
