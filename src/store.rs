@@ -10,10 +10,10 @@ const TRACKED_URL_COUNTS: &str = "QRSTATS_TRACKED_URL_COUNTS";
 
 pub(crate) async fn gen_unused_id(kv: &KvStore) -> Result<String> {
     let uuid = Uuid::new_v4().to_string();
-    let new_id = uuid.split("-").next().unwrap();
-    match kv.get(&new_id).text().await? {
-        Some(_) => return Err(Error::Internal("ID Already Exists, could not retry".into())),
-        None => return Ok(new_id.to_string()),
+    let new_id = uuid.split('-').next().unwrap();
+    match kv.get(new_id).text().await? {
+        Some(_) => Err(Error::Internal("ID Already Exists, could not retry".into())),
+        None => Ok(new_id.to_string()),
     }
 }
 
