@@ -4,12 +4,16 @@ body {
 }
 
 form {
-    padding: 1%;
+    padding: 1% 0;
 }
 
 input {
-    width: 98%;
-    margin: 1%;
+    width: 100%;
+    margin: 1% 0;
+}
+
+h2 {
+    margin: 1% 0;
 }
 
 .password-note {
