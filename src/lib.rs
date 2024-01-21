@@ -8,7 +8,7 @@ pub(crate) mod store;
 pub(crate) mod util;
 pub(crate) mod views;
 
-use routes::{create, get_stats_login, index, post_stats_login, redirect, stats};
+use routes::{create, get_stats_login, index, post_stats_login, redirect, stats, style};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct Target {
@@ -32,6 +32,7 @@ impl Display for Stats {
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     Router::new()
         .get("/", index)
+        .get("/style.css", style)
         .post_async("/create", create)
         .get_async("/redirect/:id", redirect)
         .get("/stats", get_stats_login)

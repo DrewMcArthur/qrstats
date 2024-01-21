@@ -1,0 +1,20 @@
+body {
+    max-width: 550px;
+    margin: auto;
+}
+
+form {
+    padding: 1%;
+}
+
+input {
+    width: 98%;
+    margin: 1%;
+}
+
+.password-note {
+    font-size: .8em;
+    font-style: oblique;
+    color: darkgray;
+    padding: 1%;
+}

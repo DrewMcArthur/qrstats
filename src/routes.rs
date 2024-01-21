@@ -1,18 +1,24 @@
 use crate::{
     store::{create_new_target, get_redirect_count, get_target_by_id, increment_redirect_count},
-    util::{ensure_authed, get_target, serve_html, set_html_content_type, validate_target},
+    util::{ensure_authed, get_target, serve_html, validate_target},
     views::{self, stats_view},
     Stats,
 };
 use worker::{FormData, FormEntry, Request, Response, Result, RouteContext, Url};
+
+pub(crate) fn style(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
+    let mut res = Response::ok(include_str!("public/style.css"))?;
+    res.headers_mut().set("Content-Type", "text/css")?;
+    Ok(res)
+}
 
 pub(crate) fn index(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
     serve_html(include_str!("public/index.html"))
 }
 
 pub(crate) async fn create(req: Request, ctx: RouteContext<()>) -> Result<Response> {
-    let target = get_target(req).await?;
-    if let Err(e) = validate_target(&target) {
+    let mut target = get_target(req).await?;
+    if let Err(e) = validate_target(&mut target) {
         return Response::error(e.to_string(), 400);
     }
 
@@ -33,9 +39,7 @@ pub(crate) async fn redirect(_req: Request, ctx: RouteContext<()>) -> Result<Res
 }
 
 pub(crate) fn get_stats_login(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
-    let mut res = Response::ok(include_str!("public/stats.html"));
-    set_html_content_type(&mut res);
-    res
+    serve_html(include_str!("public/stats.html"))
 }
 
 pub(crate) async fn post_stats_login(req: Request, ctx: RouteContext<()>) -> Result<Response> {
@@ -52,25 +56,36 @@ pub(crate) async fn post_stats_login(req: Request, ctx: RouteContext<()>) -> Res
     };
 
     let target = get_target_by_id(&ctx, &id).await?;
-    if !ensure_authed(Some(&pw_hash), &target)? {
+    if !ensure_authed(Some(&pw_hash), &target) {
         return Response::error("Unauthorized", 401);
     }
     let count = get_redirect_count(&ctx, &id).await?;
     stats_view(Stats { id, count })
 }
 
-pub(crate) async fn stats(_req: Request, ctx: RouteContext<()>) -> Result<Response> {
+pub(crate) async fn stats(req: Request, ctx: RouteContext<()>) -> Result<Response> {
+    let req_url = req.url().expect("couldn't get request url");
+    let origin = req_url.origin().ascii_serialization();
+
     if let Some(id) = ctx.param("id") {
-        let target = get_target_by_id(&ctx, id).await?;
-        if !ensure_authed(ctx.param("pw"), &target)? {
-            return Response::error("Unauthorized", 401);
+        match get_target_by_id(&ctx, id).await {
+            Ok(target) => {
+                if ensure_authed(ctx.param("pw"), &target) {
+                    let count = get_redirect_count(&ctx, id).await.unwrap_or(0);
+                    views::stats_view(Stats {
+                        id: id.to_string(),
+                        count,
+                    })
+                } else {
+                    Response::redirect(
+                        Url::parse_with_params(format!("{}/stats", origin).as_str(), &[("id", id)])
+                            .expect("couldn't create URL"),
+                    )
+                }
+            }
+            Err(e) => Response::error(e.to_string(), 500),
         }
-        let count = get_redirect_count(&ctx, id).await?;
-        Response::ok(format!(
-            "Hello, World! redirect counts for id {} = {}",
-            id, count
-        ))
     } else {
-        Response::error("Bad Request: ID Not Found URL", 400)
+        Response::redirect(Url::parse(format!("{}/stats", origin).as_str())?)
     }
 }

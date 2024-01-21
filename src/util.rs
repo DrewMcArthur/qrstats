@@ -5,7 +5,10 @@ use worker::{Error, FormData, FormEntry, Request, Response, Result, Url};
 
 use crate::Target;
 
-pub(crate) fn validate_target(target: &Target) -> Result<()> {
+pub(crate) fn validate_target(target: &mut Target) -> Result<()> {
+    if &target.url[..4] != "http" {
+        target.url = format!("http://{}", target.url); // default to http if not https;
+    }
     Url::parse(&target.url)?;
     Ok(())
 }
@@ -28,15 +31,12 @@ pub(crate) fn gen_hash(s: String) -> String {
     hasher.finish().to_string()
 }
 
-pub(crate) fn ensure_authed(pw_hash: Option<&String>, target: &Target) -> Result<bool> {
+pub(crate) fn ensure_authed(pw: Option<&String>, target: &Target) -> bool {
     if let Some(expected) = target.pw_hash.clone() {
-        match pw_hash {
-            Some(pass) => Ok(expected.eq(&gen_hash(pass.to_string()))),
-            None => Ok(false),
-        }
+        expected.eq(&gen_hash(pw.unwrap_or(&"".to_string()).to_string()))
     } else {
         // no password required
-        return Ok(true);
+        true
     }
 }
 

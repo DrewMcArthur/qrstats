@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 getrandom = {version = "0.2.12", features = ["js"]}
+log = "0.4.20"
 serde = {version = "1.0.195", features = ["derive"]}
 serde_json = "1.0.111"
 url_encoded_data = "0.6.1"

@@ -8,7 +8,7 @@ pub(crate) fn stats_view(stats: Stats) -> Result<Response> {
 
 pub(crate) fn create_success(target: Target, id: String) -> Result<Response> {
     let redirect_url = format!("/redirect/{}", id);
-    let stats_url = "/stats";
+    let stats_url = format!("/stats/{}", id);
 
     serve_html(
         format!(

@@ -37,8 +37,8 @@ pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &String) -> R
 
 pub(crate) async fn get_target_by_id(ctx: &RouteContext<()>, id: &String) -> Result<Target> {
     let kv = ctx.kv(TRACKED_URLS_STORE)?;
-    match kv.get(id).text().await? {
-        Some(target) => Ok(serde_json::from_str(&target)?),
+    match kv.get(id).json::<Target>().await? {
+        Some(target) => Ok(target),
         None => Err(Error::Internal("ID Not Found in our System".into())),
     }
 }
