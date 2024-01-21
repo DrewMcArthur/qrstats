@@ -24,7 +24,7 @@ pub(crate) async fn create_new_target(ctx: &RouteContext<()>, target: &Target) -
     Ok(new_id)
 }
 
-pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &String) -> Result<u32> {
+pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &str) -> Result<u32> {
     let kv = ctx.kv(TRACKED_URL_COUNTS)?;
     let count = kv
         .get(id)
@@ -35,7 +35,7 @@ pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &String) -> R
     Ok(count)
 }
 
-pub(crate) async fn get_target_by_id(ctx: &RouteContext<()>, id: &String) -> Result<Target> {
+pub(crate) async fn get_target_by_id(ctx: &RouteContext<()>, id: &str) -> Result<Target> {
     let kv = ctx.kv(TRACKED_URLS_STORE)?;
     match kv.get(id).json::<Target>().await? {
         Some(target) => Ok(target),
@@ -43,7 +43,7 @@ pub(crate) async fn get_target_by_id(ctx: &RouteContext<()>, id: &String) -> Res
     }
 }
 
-pub(crate) async fn increment_redirect_count(ctx: &RouteContext<()>, id: &String) -> Result<()> {
+pub(crate) async fn increment_redirect_count(ctx: &RouteContext<()>, id: &str) -> Result<()> {
     let kv = ctx.kv(TRACKED_URL_COUNTS)?;
     let count = kv
         .get(id)
