@@ -9,7 +9,7 @@ pub(crate) fn validate_target(target: &mut Target) -> Result<()> {
     if &target.url[..4] != "http" {
         target.url = format!("http://{}", target.url); // default to http if not https;
     }
-    Url::parse(&target.url)?;
+    Url::parse(&target.url).expect("couldn't parse url");
     Ok(())
 }
 
@@ -42,13 +42,17 @@ pub(crate) fn ensure_authed(pw: Option<&String>, target: &Target) -> bool {
 
 pub(crate) async fn get_target(req: Request) -> Result<Target> {
     let mut req = req;
-    let data: FormData = req.form_data().await?;
+    let data: FormData = req.form_data().await.expect("couldn't get form data");
 
     let missing_url_error = Error::Internal("No URL in /create request body".into());
     let bad_url_format_error =
         Error::Internal("URL should be String, not File in /create request body".into());
 
-    let new_url = match data.get("url").ok_or(missing_url_error)? {
+    let new_url = match data
+        .get("url")
+        .ok_or(missing_url_error)
+        .expect("couldn't get url from formdata")
+    {
         FormEntry::Field(s) => s,
         FormEntry::File(_) => return Err(bad_url_format_error),
     };

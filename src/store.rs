@@ -18,10 +18,22 @@ pub(crate) async fn gen_unused_id(kv: &KvStore) -> Result<String> {
 }
 
 pub(crate) async fn create_new_target(ctx: &RouteContext<()>, target: &Target) -> Result<String> {
-    let kv = ctx.kv(TRACKED_URLS_STORE)?;
-    let new_id = gen_unused_id(&kv).await?;
-    kv.put(&new_id, target.clone())?.execute().await?;
-    Ok(new_id)
+    let kv = ctx
+        .kv(TRACKED_URLS_STORE)
+        .expect("couldn't get URLS kv store");
+
+    let new_id = match ctx.param("id") {
+        Some(id) => id.to_owned(),
+        None => gen_unused_id(&kv).await.expect("could not generate new id"),
+    };
+
+    kv.put(&new_id, target.clone())
+        .expect("couldn't put new target")
+        .execute()
+        .await
+        .expect("couldn't execute kv put");
+
+    Ok(new_id.clone())
 }
 
 pub(crate) async fn get_redirect_count(ctx: &RouteContext<()>, id: &str) -> Result<u32> {

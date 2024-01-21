@@ -16,13 +16,20 @@ pub(crate) fn index(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
     serve_html(include_str!("public/index.html"))
 }
 
-pub(crate) async fn create(req: Request, ctx: RouteContext<()>) -> Result<Response> {
-    let mut target = get_target(req).await?;
+pub(crate) fn get_create(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
+    serve_html(include_str!("public/create.html"))
+}
+
+pub(crate) async fn post_create(req: Request, ctx: RouteContext<()>) -> Result<Response> {
+    let mut target = get_target(req).await.expect("couldn't get target");
+
     if let Err(e) = validate_target(&mut target) {
         return Response::error(e.to_string(), 400);
     }
 
-    let new_id = create_new_target(&ctx, &target).await?;
+    let new_id = create_new_target(&ctx, &target)
+        .await
+        .expect("couldn't create target");
 
     views::create_success(target, new_id)
 }
