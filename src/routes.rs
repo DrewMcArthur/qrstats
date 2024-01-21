@@ -1,7 +1,8 @@
 use crate::{
     store::{create_new_target, get_redirect_count, get_target_by_id, increment_redirect_count},
     util::{ensure_authed, get_target, serve_html, set_html_content_type, validate_target},
-    views::stats_view,
+    views::{self, stats_view},
+    Stats,
 };
 use worker::{FormData, FormEntry, Request, Response, Result, RouteContext, Url};
 
@@ -17,13 +18,7 @@ pub(crate) async fn create(req: Request, ctx: RouteContext<()>) -> Result<Respon
 
     let new_id = create_new_target(&ctx, &target).await?;
 
-    let redirect_url = format!("/redirect/{}", new_id);
-    let stats_url = format!("/stats/{}", new_id);
-
-    Response::ok(format!(
-        "Success! New ID for URL(\"{}\") is: {}\nRedirect URL: {}\nStats URL: {}",
-        target.url, new_id, redirect_url, stats_url
-    ))
+    views::create_success(target, new_id)
 }
 
 pub(crate) async fn redirect(_req: Request, ctx: RouteContext<()>) -> Result<Response> {
@@ -61,7 +56,7 @@ pub(crate) async fn post_stats_login(req: Request, ctx: RouteContext<()>) -> Res
         return Response::error("Unauthorized", 401);
     }
     let count = get_redirect_count(&ctx, &id).await?;
-    stats_view(&id, count)
+    stats_view(Stats { id, count })
 }
 
 pub(crate) async fn stats(_req: Request, ctx: RouteContext<()>) -> Result<Response> {
