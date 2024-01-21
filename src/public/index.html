@@ -11,23 +11,46 @@
 <body>
     <h1>Welcome to QRStats!</h1>
     <p>You can use this app to keep track of the number of visitors to your website.</p>
+    <h2>Login</h2>
+    <p>If you've already created an ID, login to view your <a href="/stats">/stats</a>.</p>
+    <h2>How it works</h2>
     <p>You give us a URL, and we generate an ID. You can then share a URL
-        like https://qrstats.drewmca.dev/redirect/{ID},
+        that looks like <a href="/redirect/9aa7e609">https://qrstats.drewmca.dev/redirect/9aa7e609</a>,
         and when they visit the site, we'll write that down and redirect them to your URL.
     </p>
-    <p>Then, you can visit https://qrstats.drewmca.dev/stats/{ID}, and see how many people have visited your site.</p>
+    <p>Then, you can visit <a href="/stats">https://qrstats.drewmca.dev/stats</a>, and see how many people have visited
+        your site.</p>
+    <h2>Create</h2>
     <p>Fill out the form below to setup your website!</p>
     <form action="/create" method="POST">
         <input type="text" name="url" placeholder="https://example.com" required>
         <input type="password" name="password" placeholder="Password" optional>
-        <p class="note">password is optional, but if you don't provide one, anyone can view the stats for the generated
-            URL!</p>
+        <span class="password-note">Password is optional, but if you don't provide one, anyone can view the stats for
+            the
+            generated
+            URL!</span>
         <input type="submit" value="Create">
     </form>
     <style>
         body {
-            max-width: 500px;
+            max-width: 550px;
             margin: auto;
+        }
+
+        form {
+            padding: 1%;
+        }
+
+        input {
+            width: 98%;
+            margin: 1%;
+        }
+
+        .password-note {
+            font-size: .8em;
+            font-style: oblique;
+            color: darkgray;
+            padding: 1%;
         }
     </style>
 
