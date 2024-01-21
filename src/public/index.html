@@ -26,11 +26,9 @@
     <p>Fill out the form below to setup your website!</p>
     <form action="/create" method="POST">
         <input type="text" name="url" placeholder="https://example.com" required>
-        <input type="password" name="password" placeholder="Password" optional>
         <span class="password-note">Password is optional, but if you don't provide one, anyone can view the stats for
-            the
-            generated
-            URL!</span>
+            the generated URL!</span>
+        <input type="password" name="password" placeholder="Password" optional>
         <input type="submit" value="Create">
     </form>
     <h2>Feedback</h2>
