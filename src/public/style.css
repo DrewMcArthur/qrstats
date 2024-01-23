@@ -17,6 +17,10 @@ h2 {
     margin: 1% 0;
 }
 
+a {
+    text-decoration: underline;
+}
+
 .note {
     font-size: .8em;
     font-style: oblique;
