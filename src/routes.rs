@@ -4,6 +4,8 @@ use crate::{
     views::{self, stats_view},
     Stats,
 };
+use qrcode::render::svg;
+use qrcode::QrCode;
 use worker::{FormData, FormEntry, Request, Response, Result, RouteContext, Url};
 
 pub(crate) fn style(_req: Request, _ctx: RouteContext<()>) -> Result<Response> {
@@ -33,6 +35,19 @@ pub(crate) async fn post_create(req: Request, ctx: RouteContext<()>) -> Result<R
     };
 
     views::create_success(target, new_id)
+}
+
+// TODO: this currently doesn't return, probably need to fix headers?
+pub(crate) async fn generate_qr_image(_req: Request, ctx: RouteContext<()>) -> Result<Response> {
+    let url = ctx.param("url").expect("url is a required param");
+    let qr = QrCode::new(url).expect("error generating qrcode");
+    let img = qr
+        .render()
+        .min_dimensions(200, 200)
+        .dark_color(svg::Color("#000"))
+        .light_color(svg::Color("#fff"))
+        .build();
+    Response::ok(img)
 }
 
 pub(crate) async fn redirect(_req: Request, ctx: RouteContext<()>) -> Result<Response> {

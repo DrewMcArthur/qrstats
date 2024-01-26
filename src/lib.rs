@@ -9,7 +9,8 @@ pub(crate) mod util;
 pub(crate) mod views;
 
 use routes::{
-    get_create, get_stats_login, index, post_create, post_stats_login, redirect, stats, style,
+    generate_qr_image, get_create, get_stats_login, index, post_create, post_stats_login, redirect,
+    stats, style,
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -38,6 +39,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get("/style.css", style)
         .get("/create", get_create)
         .post_async("/create", post_create)
+        .get_async("/qr", generate_qr_image)
         .get_async("/redirect/:id", redirect)
         .get("/stats", get_stats_login)
         .post_async("/stats", post_stats_login)
